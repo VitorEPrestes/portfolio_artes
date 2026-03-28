@@ -1,0 +1,127 @@
+.construction {
+  background: var(--bg-concrete);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Tape */
+.construction__tape {
+  overflow: hidden;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--construction-yellow),
+    var(--construction-yellow) 20px,
+    var(--construction-black) 20px,
+    var(--construction-black) 40px
+  );
+  padding: 8px 0;
+  animation: tapeBlink 2s ease-in-out infinite;
+}
+
+.construction__tape-inner {
+  display: flex;
+  white-space: nowrap;
+  animation: marquee 30s linear infinite;
+  font-family: var(--font-pixel);
+  font-size: 0.55rem;
+  color: var(--construction-black);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* Content */
+.construction__content {
+  text-align: center;
+  padding: 60px 24px;
+}
+
+.construction__icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.construction__icon {
+  font-size: 2.5rem;
+}
+
+.construction__icon--hat {
+  color: var(--construction-yellow);
+}
+
+.construction__icon--cubes {
+  color: var(--neon-blue);
+  font-size: 3rem;
+}
+
+.construction__title {
+  font-family: var(--font-pixel);
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  color: var(--construction-yellow);
+  margin-bottom: 16px;
+  text-shadow: 0 0 20px rgba(255, 217, 0, 0.3);
+  letter-spacing: 4px;
+}
+
+.construction__text {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.construction__highlight {
+  color: var(--neon-blue);
+  font-weight: 700;
+}
+
+.construction__subtext {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  max-width: 400px;
+  margin: 0 auto 32px;
+}
+
+.construction__cones {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 2rem;
+}
+
+.construction__cone {
+  animation: float 3s ease-in-out infinite;
+}
+
+.construction__cone:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+.construction__cone:nth-child(3) {
+  animation-delay: 1s;
+}
+
+@media (max-width: 768px) {
+  .construction__tape {
+    animation: none;
+  }
+
+  .construction__cone {
+    animation: none;
+  }
+
+  .construction__tape-inner {
+    font-size: 0.45rem;
+    animation-duration: 40s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .construction__tape,
+  .construction__tape-inner,
+  .construction__cone {
+    animation: none;
+  }
+}

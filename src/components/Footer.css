@@ -1,0 +1,123 @@
+.footer {
+  background: var(--bg-concrete);
+  padding: 80px 0 40px;
+}
+
+/* Social section */
+.footer__socials {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.footer__socials-title {
+  font-family: var(--font-pixel);
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  letter-spacing: 2px;
+}
+
+.footer__socials-grid {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer__social-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 24px;
+  background: var(--bg-concrete-light);
+  border: 1px solid var(--bg-concrete-lighter);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  transition: all var(--transition-fast);
+  min-width: 100px;
+}
+
+.footer__social-link svg {
+  font-size: 1.5rem;
+  transition: color var(--transition-fast);
+}
+
+.footer__social-link:hover {
+  border-color: var(--social-color);
+  color: var(--social-color);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--social-color) 20%, transparent);
+}
+
+.footer__social-link:hover svg {
+  color: var(--social-color);
+}
+
+.footer__social-link--static {
+  cursor: default;
+}
+
+.footer__social-link--static:hover {
+  border-color: var(--bg-concrete-lighter);
+  color: var(--text-secondary);
+  box-shadow: none;
+}
+
+.footer__social-link--static:hover svg {
+  color: inherit;
+}
+
+.footer__social-handle {
+  font-size: 0.65rem;
+  color: var(--accent-secondary);
+  letter-spacing: 0.4px;
+}
+
+/* Divider */
+.footer__divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--bg-concrete-lighter), transparent);
+  margin-bottom: 32px;
+}
+
+/* Bottom */
+.footer__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer__logo {
+  font-family: var(--font-pixel);
+  font-size: 0.8rem;
+  color: var(--accent-primary);
+}
+
+.footer__copy {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+  .footer {
+    padding: 60px 0 32px;
+  }
+
+  .footer__socials-grid {
+    gap: 12px;
+  }
+
+  .footer__social-link {
+    min-width: 80px;
+    padding: 16px 16px;
+  }
+
+  .footer__bottom {
+    flex-direction: column;
+    text-align: center;
+  }
+}

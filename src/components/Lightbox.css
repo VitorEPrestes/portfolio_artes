@@ -1,0 +1,119 @@
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  cursor: zoom-out;
+}
+
+.lightbox__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(4px);
+}
+
+.lightbox__spotlight {
+  position: absolute;
+  width: min(78vw, 860px);
+  height: min(72vh, 640px);
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.08), transparent 36%),
+    radial-gradient(circle at center, rgba(255, 0, 110, 0.22), transparent 64%);
+  filter: blur(10px);
+}
+
+.lightbox__img {
+  position: relative;
+  z-index: 1;
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+  border-radius: var(--radius-md);
+  border: 2px solid color-mix(in srgb, var(--accent-primary) 70%, white);
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.08),
+    0 0 28px rgba(255, 0, 110, 0.45),
+    0 18px 45px rgba(0, 0, 0, 0.65);
+}
+
+.lightbox__meta {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(12, 12, 12, 0.84);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(4px);
+  max-width: calc(100vw - 48px);
+}
+
+.lightbox__title {
+  color: var(--text-primary);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lightbox__video-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 212, 255, 0.38);
+  background: rgba(0, 212, 255, 0.14);
+  color: var(--accent-secondary);
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  transition: all var(--transition-fast);
+}
+
+.lightbox__video-btn:hover {
+  border-color: var(--accent-secondary);
+  background: rgba(0, 212, 255, 0.22);
+  box-shadow: 0 0 14px rgba(0, 212, 255, 0.25);
+}
+
+@media (max-width: 768px) {
+  .lightbox__backdrop,
+  .lightbox__meta {
+    backdrop-filter: none;
+  }
+
+  .lightbox__spotlight {
+    display: none;
+  }
+
+  .lightbox__meta {
+    gap: 8px;
+    padding: 9px 11px;
+    border-radius: 14px;
+    bottom: 14px;
+    width: calc(100vw - 28px);
+    justify-content: space-between;
+  }
+
+  .lightbox__title {
+    font-size: 0.72rem;
+  }
+
+  .lightbox__video-btn {
+    font-size: 0.62rem;
+    padding: 6px 8px;
+  }
+}

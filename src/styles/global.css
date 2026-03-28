@@ -1,0 +1,286 @@
+/* ============================================
+   ISOLAS PORTFOLIO — GLOBAL STYLES
+   Estética: Grafite de rua + Jogos retrô
+   ============================================ */
+
+/* --- CSS Reset --- */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Space Mono', 'Courier New', monospace;
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+/* --- CSS Variables (Tema Grafite + Neon) --- */
+:root {
+  /* Cores principais */
+  --neon-pink: #ff006e;
+  --neon-blue: #00d4ff;
+  --neon-green: #39ff14;
+  --neon-yellow: #ffe600;
+  --neon-orange: #ff6b00;
+  --neon-purple: #b026ff;
+
+  /* Concreto / Fundo */
+  --bg-dark: #111111;
+  --bg-concrete: #1a1a1a;
+  --bg-concrete-light: #2a2a2a;
+  --bg-concrete-lighter: #3a3a3a;
+
+  /* Texto */
+  --text-primary: #e8e8e8;
+  --text-secondary: #a0a0a0;
+  --text-muted: #808080;
+
+  /* Acentos */
+  --accent-primary: var(--neon-pink);
+  --accent-secondary: var(--neon-blue);
+
+  /* Discord */
+  --discord-blurple: #5865F2;
+  --discord-dark: #2c2f33;
+
+  /* Construção */
+  --construction-yellow: #ffd900;
+  --construction-black: #1a1a1a;
+
+  /* Espaçamento */
+  --section-padding: 40px 0;
+  --container-width: 1200px;
+  --container-padding: 0 24px;
+
+  /* Fontes */
+  --font-pixel: 'Press Start 2P', cursive;
+  --font-display: 'Pixelify Sans', sans-serif;
+  --font-body: 'Space Mono', 'Courier New', monospace;
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-medium: 0.4s ease;
+  --transition-slow: 0.6s ease;
+}
+
+/* --- Tipografia --- */
+h1, h2, h3, h4 {
+  font-family: var(--font-pixel);
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 4rem);
+}
+
+h2 {
+  font-size: clamp(1.1rem, 3vw, 1.6rem);
+  letter-spacing: 1px;
+}
+
+h3 {
+  font-size: clamp(0.8rem, 2vw, 1rem);
+}
+
+/* --- Utilidades --- */
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: var(--container-padding);
+}
+
+.section {
+  padding: var(--section-padding);
+  position: relative;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+}
+
+.section-title h2 {
+  display: inline-block;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  padding-bottom: 16px;
+  position: relative;
+}
+
+.section-title h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+}
+
+/* --- Texturas --- */
+.texture-noise {
+  position: relative;
+}
+
+.texture-noise::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.035) 0.75px, transparent 0.75px);
+  background-repeat: repeat;
+  background-size: 3px 3px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.texture-noise > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- Scrollbar custom --- */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-concrete-lighter);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
+}
+
+/* --- Selection --- */
+::selection {
+  background: var(--accent-primary);
+  color: var(--bg-dark);
+}
+
+/* --- Skip link (a11y) --- */
+.skip-link {
+  position: fixed;
+  top: -100%;
+  left: 16px;
+  z-index: 10000;
+  padding: 12px 24px;
+  background: var(--accent-primary);
+  color: var(--bg-dark);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  border-radius: var(--radius-sm);
+  transition: top 0.2s;
+}
+
+.skip-link:focus {
+  top: 16px;
+}
+
+/* --- Scan lines overlay --- */
+.scanlines {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  :root {
+    --section-padding: 28px 0;
+    --container-padding: 0 16px;
+  }
+
+  .section-title {
+    margin-bottom: 40px;
+  }
+}
+
+/* --- Section separator --- */
+.section-sep {
+  position: relative;
+  height: 12px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.section-sep::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+  opacity: 0.4;
+}
+
+.section-sep::after {
+  content: '◆';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.55rem;
+  color: var(--accent-primary);
+  opacity: 0.5;
+}
+
+.section-sep--alt::before {
+  background: linear-gradient(90deg, transparent, var(--accent-secondary), transparent);
+}
+
+.section-sep--alt::after {
+  color: var(--accent-secondary);
+}
