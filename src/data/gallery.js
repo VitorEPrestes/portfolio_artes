@@ -44,7 +44,7 @@ const IMAGE_CONFIG = {
   thumb_desafiodesenho: { title: 'Desafio Desenho pela memória', videoUrl:'https://youtu.be/hIt0qKfs1cQ?si=71sHi30bI8CsHg8O' },
   thumb_desafiodoug: { title: 'Desafio Doug 1K', videoUrl:'https://youtu.be/TIiBaMuWlx4?si=Z7BJ_X2vNE5CVNVE' },
   thumb_desafioenxergar: { title: 'Desafio Sem Enxergar', videoUrl:'https://youtu.be/Vl-jO-iiTkk?si=oLevUne15Zu93K8X' },
-  Thumb_GameplayWIllow: { title: 'Gameplay Willow' },
+  Thumb_GameplayWillow: { title: 'Gameplay Willow' },
   thumb_live: { title: 'Live ( sem fundo )' },
   thumb_live2: { title: 'Live ( com fundo )' },
   thumb_odeio_mortis: { title: 'Gameplay Mortis', videoUrl:'https://youtu.be/Mek00FhNvDI?si=XQ7NprqMUnyCU4vP' },
@@ -55,7 +55,7 @@ const IMAGE_CONFIG = {
 // Use o nome do arquivo sem extensao.
 const SHOWCASE_FILES = [
   'meiocorpooutro_isolas',
-  'Thumb_GameplayWIllow',
+  'Thumb_GameplayWillow',
   'icone_starshimas',
   'Thumb_OllieBea',
   'thumb_live2',

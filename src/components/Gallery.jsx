@@ -1,12 +1,25 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
 import { categories, galleryItems } from '../data/gallery'
 import Lightbox from './Lightbox'
 import './Gallery.css'
 
+const MOBILE_INITIAL_COUNT = 6
+
 export default function Gallery() {
   const [activeCategory, setActiveCategory] = useState('all')
   const [lightboxImage, setLightboxImage] = useState(null)
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches,
+  )
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 768px)')
+    const handler = (e) => setIsMobile(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
 
   const getItemCategories = (item) => {
     if (Array.isArray(item.categories)) {
@@ -23,6 +36,12 @@ export default function Gallery() {
   const filtered = activeCategory === 'all'
     ? galleryItems
     : galleryItems.filter((item) => getItemCategories(item).includes(activeCategory))
+
+  const displayedItems = isMobile && !isExpanded
+    ? filtered.slice(0, MOBILE_INITIAL_COUNT)
+    : filtered
+
+  const hiddenCount = filtered.length - MOBILE_INITIAL_COUNT
 
   const isThumbnail = (item) => getItemCategories(item).includes('thumbnail')
 
@@ -62,7 +81,7 @@ export default function Gallery() {
         {/* Gallery grid */}
         <motion.div className="gallery__grid">
           <AnimatePresence>
-            {filtered.map((item) => (
+            {displayedItems.map((item) => (
               <motion.div
                 key={item.id}
                 className="gallery__item"
@@ -115,6 +134,16 @@ export default function Gallery() {
         layoutIdPrefix="gallery"
         onClose={() => setLightboxImage(null)}
       />
+
+      {/* Mobile expand/collapse FAB */}
+      <div className="gallery__expand-fab">
+        <button
+          className="gallery__expand-btn"
+          onClick={() => setIsExpanded((prev) => !prev)}
+        >
+          {isExpanded ? '▲ Recolher' : `▼ Mostrar mais (${hiddenCount > 0 ? hiddenCount : filtered.length})`}
+        </button>
+      </div>
     </section>
   )
 }
