@@ -120,6 +120,10 @@
 }
 
 @media (max-width: 768px) {
+  .navbar--scrolled {
+    backdrop-filter: none;
+  }
+
   .navbar__links {
     display: none;
   }

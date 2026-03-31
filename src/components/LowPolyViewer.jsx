@@ -111,7 +111,9 @@ export default function LowPolyViewer({ modelIndex = 0, lowPower = false }) {
       return;
     }
 
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.25 : 2));
+    renderer.setPixelRatio(
+      Math.min(window.devicePixelRatio, isMobile ? 1.25 : 2),
+    );
     renderer.setClearColor(0x000000, 0);
     container.appendChild(renderer.domElement);
 
@@ -259,7 +261,8 @@ export default function LowPolyViewer({ modelIndex = 0, lowPower = false }) {
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      if (resumeRotateTimerRef.current) clearTimeout(resumeRotateTimerRef.current);
+      if (resumeRotateTimerRef.current)
+        clearTimeout(resumeRotateTimerRef.current);
       if (visibilityObserver) visibilityObserver.disconnect();
       resizeObserver.disconnect();
       container.removeEventListener("pointerdown", onPointerDown);

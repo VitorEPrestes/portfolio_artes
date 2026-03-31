@@ -4,11 +4,7 @@ import "./LowPolyPage.css";
 
 const PIXEL_COLORS = ["#39ff14", "#00d4ff", "#b026ff", "#ffe600", "#ff006e"];
 
-const isMobile =
-  typeof window !== "undefined" &&
-  window.matchMedia("(max-width: 768px)").matches;
-
-function generateBgShapes() {
+function generateBgShapes(isMobile) {
   const count = isMobile ? 4 : 15;
   const shapes = [];
   const types = ["triangle", "diamond", "hexagon"];
@@ -26,7 +22,7 @@ function generateBgShapes() {
   return shapes;
 }
 
-function generateBgPixels() {
+function generateBgPixels(isMobile) {
   const count = isMobile ? 8 : 42;
   const pixels = [];
   for (let i = 0; i < count; i++) {
@@ -45,7 +41,7 @@ function generateBgPixels() {
   return pixels;
 }
 
-function generateBeams() {
+function generateBeams(isMobile) {
   const count = isMobile ? 2 : 7;
   const beams = [];
   for (let i = 0; i < count; i++) {
@@ -65,9 +61,9 @@ export default function LowPolyPage({ onClose }) {
   const isMobile =
     typeof window !== "undefined" &&
     window.matchMedia("(max-width: 900px)").matches;
-  const bgShapes = useMemo(() => generateBgShapes(), []);
-  const bgPixels = useMemo(() => generateBgPixels(), []);
-  const beams = useMemo(() => generateBeams(), []);
+  const bgShapes = useMemo(() => generateBgShapes(isMobile), [isMobile]);
+  const bgPixels = useMemo(() => generateBgPixels(isMobile), [isMobile]);
+  const beams = useMemo(() => generateBeams(isMobile), [isMobile]);
 
   useEffect(() => {
     // Fade in after mount
