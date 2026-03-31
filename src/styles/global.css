@@ -236,6 +236,10 @@ h3 {
 
 /* --- Responsive --- */
 @media (max-width: 768px) {
+  html {
+    scroll-behavior: auto;
+  }
+
   :root {
     --section-padding: 28px 0;
     --container-padding: 0 16px;
@@ -243,6 +247,14 @@ h3 {
 
   .section-title {
     margin-bottom: 40px;
+  }
+
+  .scanlines {
+    display: none;
+  }
+
+  .texture-noise::before {
+    opacity: 0.5;
   }
 }
 

@@ -65,16 +65,12 @@ function createGeometry(type) {
   }
 }
 
-export default function LowPolyViewer({ modelIndex = 0 }) {
+export default function LowPolyViewer({ modelIndex = 0, lowPower = false }) {
   const mountRef = useRef(null);
-  const rendererRef = useRef(null);
-  const sceneRef = useRef(null);
-  const cameraRef = useRef(null);
-  const meshGroupRef = useRef(null);
   const isDraggingRef = useRef(false);
-  const prevMouseRef = useRef({ x: 0, y: 0 });
-  const rotationVelRef = useRef({ x: 0, y: 0 });
-  const autoRotateRef = useRef(true);
+  const prevPointerRef = useRef({ x: 0, y: 0 });
+  const isVisibleRef = useRef(true);
+  const resumeRotateTimerRef = useRef(null);
   const rafRef = useRef(null);
   const [webglFailed, setWebglFailed] = useState(false);
 
@@ -83,22 +79,25 @@ export default function LowPolyViewer({ modelIndex = 0 }) {
     const container = mountRef.current;
     if (!container) return;
 
+    const isMobile =
+      lowPower ||
+      (typeof window !== "undefined" &&
+        window.matchMedia("(max-width: 900px)").matches);
+
     const model = MODELS[modelIndex % MODELS.length];
 
     // Scene
     const scene = new THREE.Scene();
-    sceneRef.current = scene;
 
     // Camera
     const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
     camera.position.z = 4;
-    cameraRef.current = camera;
 
     // Renderer — wrap in try/catch for mobile WebGL failures
     let renderer;
     try {
       renderer = new THREE.WebGLRenderer({
-        antialias: true,
+        antialias: !isMobile,
         alpha: true,
         powerPreference: "low-power",
       });
@@ -112,9 +111,8 @@ export default function LowPolyViewer({ modelIndex = 0 }) {
       return;
     }
 
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.25 : 2));
     renderer.setClearColor(0x000000, 0);
-    rendererRef.current = renderer;
     container.appendChild(renderer.domElement);
 
     // Lights
@@ -131,7 +129,6 @@ export default function LowPolyViewer({ modelIndex = 0 }) {
 
     // Create mesh group
     const group = new THREE.Group();
-    meshGroupRef.current = group;
 
     const geometry = createGeometry(model.geometry);
 
@@ -158,6 +155,13 @@ export default function LowPolyViewer({ modelIndex = 0 }) {
     group.scale.setScalar(model.scale);
     scene.add(group);
 
+    let autoRotate = !isMobile;
+
+    const renderFrame = () => {
+      if (!isVisibleRef.current) return;
+      renderer.render(scene, camera);
+    };
+
     // Handle resize — also handles initial 0×0 sizing
     const applySize = () => {
       const w = container.clientWidth;
@@ -166,6 +170,7 @@ export default function LowPolyViewer({ modelIndex = 0 }) {
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
+      renderFrame();
     };
 
     const resizeObserver = new ResizeObserver(applySize);
@@ -174,65 +179,93 @@ export default function LowPolyViewer({ modelIndex = 0 }) {
     // Initial sizing (may be 0 on mobile, ResizeObserver will catch it)
     applySize();
 
+    let visibilityObserver;
+    if (typeof IntersectionObserver !== "undefined") {
+      visibilityObserver = new IntersectionObserver(
+        ([entry]) => {
+          isVisibleRef.current = entry.isIntersecting;
+          if (entry.isIntersecting) renderFrame();
+        },
+        { threshold: 0.1 },
+      );
+      visibilityObserver.observe(container);
+    }
+
     // Drag rotation
     const onPointerDown = (e) => {
       isDraggingRef.current = true;
-      autoRotateRef.current = false;
-      prevMouseRef.current = { x: e.clientX, y: e.clientY };
-      rotationVelRef.current = { x: 0, y: 0 };
+      autoRotate = false;
+      prevPointerRef.current = { x: e.clientX, y: e.clientY };
       container.style.cursor = "grabbing";
+      if (resumeRotateTimerRef.current) {
+        clearTimeout(resumeRotateTimerRef.current);
+        resumeRotateTimerRef.current = null;
+      }
+      if (typeof container.setPointerCapture === "function") {
+        container.setPointerCapture(e.pointerId);
+      }
     };
 
     const onPointerMove = (e) => {
       if (!isDraggingRef.current) return;
-      const dx = e.clientX - prevMouseRef.current.x;
-      const dy = e.clientY - prevMouseRef.current.y;
-      rotationVelRef.current = { x: dy * 0.005, y: dx * 0.005 };
+      const dx = e.clientX - prevPointerRef.current.x;
+      const dy = e.clientY - prevPointerRef.current.y;
       group.rotation.x += dy * 0.005;
       group.rotation.y += dx * 0.005;
-      prevMouseRef.current = { x: e.clientX, y: e.clientY };
+      prevPointerRef.current = { x: e.clientX, y: e.clientY };
+      if (isMobile) renderFrame();
     };
 
-    const onPointerUp = () => {
+    const onPointerUp = (e) => {
       isDraggingRef.current = false;
       container.style.cursor = "grab";
-      // Resume auto rotation after 3s
-      setTimeout(() => {
-        if (!isDraggingRef.current) autoRotateRef.current = true;
-      }, 3000);
+      if (typeof container.releasePointerCapture === "function") {
+        try {
+          container.releasePointerCapture(e.pointerId);
+        } catch {
+          // no-op
+        }
+      }
+      if (!isMobile) {
+        resumeRotateTimerRef.current = setTimeout(() => {
+          if (!isDraggingRef.current) autoRotate = true;
+        }, 3000);
+      }
     };
 
     container.addEventListener("pointerdown", onPointerDown);
     window.addEventListener("pointermove", onPointerMove);
     window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
 
-    // Animation loop
-    const animate = () => {
-      rafRef.current = requestAnimationFrame(animate);
+    if (!isMobile) {
+      const animate = () => {
+        rafRef.current = requestAnimationFrame(animate);
+        if (!isVisibleRef.current) return;
 
-      if (autoRotateRef.current) {
-        group.rotation.y += 0.005;
-        group.rotation.x += 0.002;
-      } else if (!isDraggingRef.current) {
-        // Apply inertia
-        group.rotation.x += rotationVelRef.current.x;
-        group.rotation.y += rotationVelRef.current.y;
-        rotationVelRef.current.x *= 0.95;
-        rotationVelRef.current.y *= 0.95;
-      }
+        if (autoRotate && !isDraggingRef.current) {
+          group.rotation.y += 0.005;
+          group.rotation.x += 0.002;
+        }
 
-      renderer.render(scene, camera);
-    };
-    animate();
+        renderer.render(scene, camera);
+      };
+      animate();
+    } else {
+      renderFrame();
+    }
 
     container.style.cursor = "grab";
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (resumeRotateTimerRef.current) clearTimeout(resumeRotateTimerRef.current);
+      if (visibilityObserver) visibilityObserver.disconnect();
       resizeObserver.disconnect();
       container.removeEventListener("pointerdown", onPointerDown);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
       renderer.dispose();
       geometry.dispose();
       material.dispose();
@@ -241,7 +274,7 @@ export default function LowPolyViewer({ modelIndex = 0 }) {
         container.removeChild(renderer.domElement);
       }
     };
-  }, [modelIndex, webglFailed]);
+  }, [modelIndex, webglFailed, lowPower]);
 
   if (webglFailed) {
     const model = MODELS[modelIndex % MODELS.length];

@@ -62,6 +62,9 @@ function generateBeams() {
 
 export default function LowPolyPage({ onClose }) {
   const [visible, setVisible] = useState(false);
+  const isMobile =
+    typeof window !== "undefined" &&
+    window.matchMedia("(max-width: 900px)").matches;
   const bgShapes = useMemo(() => generateBgShapes(), []);
   const bgPixels = useMemo(() => generateBgPixels(), []);
   const beams = useMemo(() => generateBeams(), []);
@@ -78,10 +81,6 @@ export default function LowPolyPage({ onClose }) {
   }, []);
 
   const handleClose = () => {
-    if (typeof window !== "undefined") {
-      window.location.reload();
-      return;
-    }
     setVisible(false);
     setTimeout(() => onClose?.(), 200);
   };
@@ -196,7 +195,7 @@ export default function LowPolyPage({ onClose }) {
 
               {/* 3D Viewer */}
               <div className="lowpoly-page__viewer">
-                <LowPolyViewer modelIndex={i} />
+                <LowPolyViewer modelIndex={i} lowPower={isMobile} />
                 <span className="lowpoly-page__viewer-hint">
                   ↻ arraste para girar
                 </span>

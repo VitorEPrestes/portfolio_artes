@@ -691,7 +691,7 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 900px) {
   .lowpoly-page__grid {
     grid-template-columns: 1fr;
     gap: 16px;
@@ -751,5 +751,10 @@
 
   .lowpoly-page__grid-overlay::before {
     animation: none;
+  }
+
+  .lowpoly-page__fade-in {
+    animation: none;
+    opacity: 1;
   }
 }
