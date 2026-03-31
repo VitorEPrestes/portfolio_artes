@@ -7,8 +7,6 @@
   position: fixed;
   inset: 0;
   z-index: 10000;
-  min-height: 100svh;
-  height: 100dvh;
   background: #0a0a0a;
   overflow-y: auto;
   overflow-x: hidden;
@@ -694,15 +692,6 @@
 }
 
 @media (max-width: 900px) {
-  .lowpoly-page {
-    min-height: 100svh;
-    height: 100dvh;
-  }
-
-  .lowpoly-page__content {
-    min-height: 100svh;
-  }
-
   .lowpoly-page__bg,
   .lowpoly-page__grid-overlay {
     display: none;

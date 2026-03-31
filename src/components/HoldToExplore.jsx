@@ -179,9 +179,12 @@ export default function HoldToExplore({ onActivate }) {
   }, []);
 
   const glowClass = isHolding ? getGlowClass(progress) : "";
-  const buttonScale = 1 + progress * 0.16;
-  const vibrateX = 1 + progress * 4.5;
-  const vibrateY = 0.8 + progress * 3.8;
+  const isMobileHold =
+    typeof window !== "undefined" &&
+    window.matchMedia("(max-width: 768px)").matches;
+  const buttonScale = isMobileHold ? 1 + progress * 0.06 : 1 + progress * 0.16;
+  const vibrateX = isMobileHold ? 0.5 + progress * 1.5 : 1 + progress * 4.5;
+  const vibrateY = isMobileHold ? 0.4 + progress * 1.2 : 0.8 + progress * 3.8;
   const vibrateDuration = Math.max(0.05, 0.16 - progress * 0.1);
   const tunnelPulse = Math.max(0.4, 1.2 - progress * 0.7);
   const pageFxOpacity = isHolding ? 0.15 + progress * 0.65 : 0;

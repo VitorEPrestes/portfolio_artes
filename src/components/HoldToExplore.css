@@ -8,6 +8,7 @@
   align-items: center;
   margin-top: 48px;
   gap: 12px;
+  overflow: hidden;
 }
 
 .hold-explore__page-fx {
@@ -512,5 +513,15 @@
     font-size: clamp(0.66rem, 4.2vw, 0.9rem);
     letter-spacing: 2px;
     padding: 8px 12px 10px;
+  }
+
+  .hold-explore__page-fx {
+    display: none;
+  }
+
+  .hold-explore__orbit,
+  .hold-explore__tunnel-ring,
+  .hold-explore__tunnel-core {
+    display: none;
   }
 }
