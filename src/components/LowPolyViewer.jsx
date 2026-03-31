@@ -52,7 +52,7 @@ const MODELS = [
     source: `${ASSET_BASE}modelos/sonic/Sonic.fbx`,
     color: 0x2f7df6,
     wireColor: 0xffe600,
-    scale: 2.3,
+    scale: 1.3,
   },
 ];
 
@@ -186,7 +186,7 @@ export default function LowPolyViewer({
           const center = bounds.getCenter(new THREE.Vector3());
           fbx.position.sub(center);
           const maxAxis = Math.max(size.x, size.y, size.z) || 1;
-          const normalizedScale = (model.scale || 2.3) / maxAxis;
+          const normalizedScale = (model.scale || 1.3) / maxAxis;
           fbx.scale.setScalar(normalizedScale);
 
           group.add(fbx);
