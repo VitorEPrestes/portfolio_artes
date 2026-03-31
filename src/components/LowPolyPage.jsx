@@ -4,10 +4,15 @@ import "./LowPolyPage.css";
 
 const PIXEL_COLORS = ["#39ff14", "#00d4ff", "#b026ff", "#ffe600", "#ff006e"];
 
+const isMobile =
+  typeof window !== "undefined" &&
+  window.matchMedia("(max-width: 768px)").matches;
+
 function generateBgShapes() {
+  const count = isMobile ? 4 : 15;
   const shapes = [];
   const types = ["triangle", "diamond", "hexagon"];
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < count; i++) {
     shapes.push({
       id: i,
       type: types[i % types.length],
@@ -22,8 +27,9 @@ function generateBgShapes() {
 }
 
 function generateBgPixels() {
+  const count = isMobile ? 8 : 42;
   const pixels = [];
-  for (let i = 0; i < 42; i++) {
+  for (let i = 0; i < count; i++) {
     pixels.push({
       id: i,
       left: `${Math.random() * 100}%`,
@@ -40,8 +46,9 @@ function generateBgPixels() {
 }
 
 function generateBeams() {
+  const count = isMobile ? 2 : 7;
   const beams = [];
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < count; i++) {
     beams.push({
       id: i,
       top: `${8 + i * 14}%`,
@@ -229,19 +236,26 @@ export default function LowPolyPage({ onClose }) {
           className="lowpoly-page__rig-info lowpoly-page__fade-in"
           style={{ animationDelay: "0.95s" }}
         >
-          <h2 className="lowpoly-page__rig-title">Rig por Parenting (sem custo extra)</h2>
+          <h2 className="lowpoly-page__rig-title">
+            Rig por Parenting (sem custo extra)
+          </h2>
           <p className="lowpoly-page__rig-text">
-            Também posso montar uma rig por <strong>parenting</strong>, em vez de
-            uma rig com deformação do modelo, <strong>sem valor adicional</strong>.
+            Também posso montar uma rig por <strong>parenting</strong>, em vez
+            de uma rig com deformação do modelo,{" "}
+            <strong>sem valor adicional</strong>.
           </p>
 
           <div className="lowpoly-page__rig-gallery">
             <figure className="lowpoly-page__rig-figure">
-              <div className="lowpoly-page__rig-placeholder">Imagem: rig por parenting</div>
+              <div className="lowpoly-page__rig-placeholder">
+                Imagem: rig por parenting
+              </div>
               <figcaption>Exemplo do tipo de rig por parenting</figcaption>
             </figure>
             <figure className="lowpoly-page__rig-figure">
-              <div className="lowpoly-page__rig-placeholder">Imagem: rig com deformação</div>
+              <div className="lowpoly-page__rig-placeholder">
+                Imagem: rig com deformação
+              </div>
               <figcaption>Comparação com rig que deforma o modelo</figcaption>
             </figure>
           </div>

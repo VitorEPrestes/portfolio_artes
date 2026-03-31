@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 
 const MODELS = [
@@ -76,8 +76,10 @@ export default function LowPolyViewer({ modelIndex = 0 }) {
   const rotationVelRef = useRef({ x: 0, y: 0 });
   const autoRotateRef = useRef(true);
   const rafRef = useRef(null);
+  const [webglFailed, setWebglFailed] = useState(false);
 
   useEffect(() => {
+    if (webglFailed) return;
     const container = mountRef.current;
     if (!container) return;
 
@@ -92,11 +94,24 @@ export default function LowPolyViewer({ modelIndex = 0 }) {
     camera.position.z = 4;
     cameraRef.current = camera;
 
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true,
-    });
+    // Renderer — wrap in try/catch for mobile WebGL failures
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+        powerPreference: "low-power",
+      });
+    } catch {
+      setWebglFailed(true);
+      return;
+    }
+
+    if (!renderer.domElement) {
+      setWebglFailed(true);
+      return;
+    }
+
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
     rendererRef.current = renderer;
@@ -143,22 +158,21 @@ export default function LowPolyViewer({ modelIndex = 0 }) {
     group.scale.setScalar(model.scale);
     scene.add(group);
 
-    // Handle resize
-    const resizeObserver = new ResizeObserver(() => {
+    // Handle resize — also handles initial 0×0 sizing
+    const applySize = () => {
       const w = container.clientWidth;
       const h = container.clientHeight;
+      if (w === 0 || h === 0) return;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
-    });
+    };
+
+    const resizeObserver = new ResizeObserver(applySize);
     resizeObserver.observe(container);
 
-    // Initial sizing
-    const w = container.clientWidth;
-    const h = container.clientHeight;
-    renderer.setSize(w, h);
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
+    // Initial sizing (may be 0 on mobile, ResizeObserver will catch it)
+    applySize();
 
     // Drag rotation
     const onPointerDown = (e) => {
@@ -227,9 +241,43 @@ export default function LowPolyViewer({ modelIndex = 0 }) {
         container.removeChild(renderer.domElement);
       }
     };
-  }, [modelIndex]);
+  }, [modelIndex, webglFailed]);
 
-  return <div ref={mountRef} style={{ width: "100%", height: "100%" }} />;
+  if (webglFailed) {
+    const model = MODELS[modelIndex % MODELS.length];
+    return (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "grid",
+          placeItems: "center",
+          background: `radial-gradient(circle, #${model.color.toString(16).padStart(6, "0")}22, #0d0d0d)`,
+        }}
+      >
+        <span
+          style={{
+            fontFamily: "var(--font-pixel)",
+            fontSize: "0.45rem",
+            color: `#${model.wireColor.toString(16).padStart(6, "0")}`,
+            textTransform: "uppercase",
+            letterSpacing: "1px",
+            textAlign: "center",
+            padding: "12px",
+          }}
+        >
+          3D indisponível
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={mountRef}
+      style={{ width: "100%", height: "100%", touchAction: "none" }}
+    />
+  );
 }
 
 export { MODELS };

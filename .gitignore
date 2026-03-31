@@ -1,6 +1,8 @@
 node_modules/
 dist/
-src/imgs/
+src/imgs/*
+!src/imgs/optimized/
+!src/imgs/optimized/**
 .DS_Store
 *.log
 .env

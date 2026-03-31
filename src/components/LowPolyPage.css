@@ -10,6 +10,8 @@
   background: #0a0a0a;
   overflow-y: auto;
   overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 /* --- Animated background --- */
@@ -722,5 +724,32 @@
 
   .lowpoly-page__rig-gallery {
     grid-template-columns: 1fr;
+  }
+
+  /* Disable heavy background animations on mobile */
+  .lowpoly-page__bg-aurora,
+  .lowpoly-page__bg-aurora--alt {
+    animation: none;
+  }
+
+  .lowpoly-page__bg-beam {
+    animation: none;
+    display: none;
+  }
+
+  .lowpoly-page__bg-pixel {
+    animation: none;
+  }
+
+  .lowpoly-page__bg-shape {
+    animation: none;
+  }
+
+  .lowpoly-page__grid-overlay {
+    animation: none;
+  }
+
+  .lowpoly-page__grid-overlay::before {
+    animation: none;
   }
 }
