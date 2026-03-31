@@ -271,7 +271,11 @@ export default function HoldToExplore({ onActivate }) {
       </div>
 
       {noticeVisible && (
-        <p className="hold-explore__construction-msg" role="status" aria-live="polite">
+        <p
+          className="hold-explore__construction-msg"
+          role="status"
+          aria-live="polite"
+        >
           Esta pagina esta em construcao.
         </p>
       )}
@@ -297,7 +301,6 @@ export default function HoldToExplore({ onActivate }) {
           ))}
         </div>
       )}
-
     </div>
   );
 }
