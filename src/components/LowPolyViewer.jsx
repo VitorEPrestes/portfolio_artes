@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
 
 const MODELS = [
   {
@@ -43,6 +44,13 @@ const MODELS = [
     color: 0xff6b00,
     wireColor: 0x00d4ff,
     scale: 1.3,
+  },
+  {
+    name: "Sonic",
+    source: "/modelos/sonic/Sonic.fbx",
+    color: 0x2f7df6,
+    wireColor: 0xffe600,
+    scale: 2.3,
   },
 ];
 
@@ -141,29 +149,79 @@ export default function LowPolyViewer({
     // Create mesh group
     const group = new THREE.Group();
 
-    const geometry = createGeometry(model.geometry);
+    const disposableGeometries = [];
+    const disposableMaterials = [];
+    let isDisposed = false;
 
-    // Solid mesh with flat shading
-    const material = new THREE.MeshStandardMaterial({
-      color: model.color,
-      flatShading: true,
-      roughness: 0.6,
-      metalness: 0.2,
-    });
-    const solidMesh = new THREE.Mesh(geometry, material);
-    group.add(solidMesh);
+    if (model.source) {
+      const loader = new FBXLoader();
+      const source = model.source;
+      const lastSlash = source.lastIndexOf("/");
+      const basePath = source.slice(0, lastSlash + 1);
+      const fileName = source.slice(lastSlash + 1);
 
-    // Wireframe overlay
-    const wireGeometry = new THREE.WireframeGeometry(geometry);
-    const wireMaterial = new THREE.LineBasicMaterial({
-      color: model.wireColor,
-      transparent: true,
-      opacity: 0.3,
-    });
-    const wireframe = new THREE.LineSegments(wireGeometry, wireMaterial);
-    group.add(wireframe);
+      loader.setPath(basePath);
+      loader.load(
+        fileName,
+        (fbx) => {
+          if (isDisposed) return;
 
-    group.scale.setScalar(model.scale);
+          fbx.traverse((node) => {
+            if (!node.isMesh) return;
+            if (node.geometry) disposableGeometries.push(node.geometry);
+            const mats = Array.isArray(node.material)
+              ? node.material
+              : [node.material];
+            mats.filter(Boolean).forEach((mat) => {
+              mat.side = THREE.FrontSide;
+              disposableMaterials.push(mat);
+            });
+          });
+
+          const bounds = new THREE.Box3().setFromObject(fbx);
+          const size = bounds.getSize(new THREE.Vector3());
+          const center = bounds.getCenter(new THREE.Vector3());
+          fbx.position.sub(center);
+          const maxAxis = Math.max(size.x, size.y, size.z) || 1;
+          const normalizedScale = (model.scale || 2.3) / maxAxis;
+          fbx.scale.setScalar(normalizedScale);
+
+          group.add(fbx);
+          renderFrameRef.current();
+        },
+        undefined,
+        () => {
+          if (!isDisposed) setWebglFailed(true);
+        },
+      );
+    } else {
+      const geometry = createGeometry(model.geometry);
+
+      // Solid mesh with flat shading
+      const material = new THREE.MeshStandardMaterial({
+        color: model.color,
+        flatShading: true,
+        roughness: 0.6,
+        metalness: 0.2,
+      });
+      const solidMesh = new THREE.Mesh(geometry, material);
+      group.add(solidMesh);
+
+      // Wireframe overlay
+      const wireGeometry = new THREE.WireframeGeometry(geometry);
+      const wireMaterial = new THREE.LineBasicMaterial({
+        color: model.wireColor,
+        transparent: true,
+        opacity: 0.3,
+      });
+      const wireframe = new THREE.LineSegments(wireGeometry, wireMaterial);
+      group.add(wireframe);
+
+      disposableGeometries.push(geometry, wireGeometry);
+      disposableMaterials.push(material, wireMaterial);
+      group.scale.setScalar(model.scale);
+    }
+
     scene.add(group);
 
     let autoRotate = !isMobile;
@@ -272,6 +330,7 @@ export default function LowPolyViewer({
     container.style.cursor = interactive ? "grab" : "default";
 
     return () => {
+      isDisposed = true;
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       if (resumeRotateTimerRef.current)
         clearTimeout(resumeRotateTimerRef.current);
@@ -284,9 +343,8 @@ export default function LowPolyViewer({
         window.removeEventListener("pointercancel", onPointerUp);
       }
       renderer.dispose();
-      geometry.dispose();
-      material.dispose();
-      wireMaterial.dispose();
+      disposableGeometries.forEach((geometry) => geometry.dispose());
+      disposableMaterials.forEach((material) => material.dispose());
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
       }
