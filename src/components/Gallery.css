@@ -161,7 +161,9 @@
     color: var(--accent-secondary);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(0, 212, 255, 0.15);
+    box-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.5),
+      0 0 16px rgba(0, 212, 255, 0.15);
     white-space: nowrap;
     cursor: pointer;
     transition: all 0.2s ease;

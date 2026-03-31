@@ -77,6 +77,11 @@ export default function LowPolyPage({ onClose }) {
   }, []);
 
   const handleClose = () => {
+    if (typeof window !== "undefined") {
+      window.location.reload();
+      return;
+    }
+
     setVisible(false);
     setTimeout(() => onClose?.(), 200);
   };
