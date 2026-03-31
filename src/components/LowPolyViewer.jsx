@@ -65,8 +65,15 @@ function createGeometry(type) {
   }
 }
 
-export default function LowPolyViewer({ modelIndex = 0, lowPower = false }) {
+export default function LowPolyViewer({
+  modelIndex = 0,
+  lowPower = false,
+  interactive = true,
+}) {
   const mountRef = useRef(null);
+  const cameraRef = useRef(null);
+  const renderFrameRef = useRef(() => {});
+  const zoomRef = useRef(4);
   const isDraggingRef = useRef(false);
   const prevPointerRef = useRef({ x: 0, y: 0 });
   const isVisibleRef = useRef(true);
@@ -92,6 +99,8 @@ export default function LowPolyViewer({ modelIndex = 0, lowPower = false }) {
     // Camera
     const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 100);
     camera.position.z = 4;
+    cameraRef.current = camera;
+    zoomRef.current = 4;
 
     // Renderer — wrap in try/catch for mobile WebGL failures
     let renderer;
@@ -163,6 +172,7 @@ export default function LowPolyViewer({ modelIndex = 0, lowPower = false }) {
       if (!isVisibleRef.current) return;
       renderer.render(scene, camera);
     };
+    renderFrameRef.current = renderFrame;
 
     // Handle resize — also handles initial 0×0 sizing
     const applySize = () => {
@@ -220,7 +230,7 @@ export default function LowPolyViewer({ modelIndex = 0, lowPower = false }) {
 
     const onPointerUp = (e) => {
       isDraggingRef.current = false;
-      container.style.cursor = "grab";
+      container.style.cursor = interactive ? "grab" : "default";
       if (typeof container.releasePointerCapture === "function") {
         try {
           container.releasePointerCapture(e.pointerId);
@@ -235,10 +245,12 @@ export default function LowPolyViewer({ modelIndex = 0, lowPower = false }) {
       }
     };
 
-    container.addEventListener("pointerdown", onPointerDown);
-    window.addEventListener("pointermove", onPointerMove);
-    window.addEventListener("pointerup", onPointerUp);
-    window.addEventListener("pointercancel", onPointerUp);
+    if (interactive) {
+      container.addEventListener("pointerdown", onPointerDown);
+      window.addEventListener("pointermove", onPointerMove);
+      window.addEventListener("pointerup", onPointerUp);
+      window.addEventListener("pointercancel", onPointerUp);
+    }
 
     if (!isMobile) {
       const animate = () => {
@@ -257,7 +269,7 @@ export default function LowPolyViewer({ modelIndex = 0, lowPower = false }) {
       renderFrame();
     }
 
-    container.style.cursor = "grab";
+    container.style.cursor = interactive ? "grab" : "default";
 
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -265,10 +277,12 @@ export default function LowPolyViewer({ modelIndex = 0, lowPower = false }) {
         clearTimeout(resumeRotateTimerRef.current);
       if (visibilityObserver) visibilityObserver.disconnect();
       resizeObserver.disconnect();
-      container.removeEventListener("pointerdown", onPointerDown);
-      window.removeEventListener("pointermove", onPointerMove);
-      window.removeEventListener("pointerup", onPointerUp);
-      window.removeEventListener("pointercancel", onPointerUp);
+      if (interactive) {
+        container.removeEventListener("pointerdown", onPointerDown);
+        window.removeEventListener("pointermove", onPointerMove);
+        window.removeEventListener("pointerup", onPointerUp);
+        window.removeEventListener("pointercancel", onPointerUp);
+      }
       renderer.dispose();
       geometry.dispose();
       material.dispose();
@@ -277,7 +291,18 @@ export default function LowPolyViewer({ modelIndex = 0, lowPower = false }) {
         container.removeChild(renderer.domElement);
       }
     };
-  }, [modelIndex, webglFailed, lowPower]);
+  }, [modelIndex, webglFailed, lowPower, interactive]);
+
+  const zoomBy = (delta) => {
+    const camera = cameraRef.current;
+    if (!camera) return;
+    const nextZoom = Math.min(7, Math.max(2.2, zoomRef.current + delta));
+    if (nextZoom === zoomRef.current) return;
+    zoomRef.current = nextZoom;
+    camera.position.z = nextZoom;
+    camera.updateProjectionMatrix();
+    renderFrameRef.current();
+  };
 
   if (webglFailed) {
     const model = MODELS[modelIndex % MODELS.length];
@@ -309,10 +334,65 @@ export default function LowPolyViewer({ modelIndex = 0, lowPower = false }) {
   }
 
   return (
-    <div
-      ref={mountRef}
-      style={{ width: "100%", height: "100%", touchAction: "none" }}
-    />
+    <div style={{ position: "relative", width: "100%", height: "100%" }}>
+      <div
+        ref={mountRef}
+        style={{
+          width: "100%",
+          height: "100%",
+          touchAction: interactive ? "none" : "pan-y",
+        }}
+      />
+
+      {interactive && (
+        <div
+          style={{
+            position: "absolute",
+            top: 8,
+            left: 8,
+            display: "flex",
+            flexDirection: "column",
+            gap: 6,
+            zIndex: 3,
+          }}
+        >
+          <button
+            type="button"
+            aria-label="Aproximar modelo"
+            onClick={() => zoomBy(-0.35)}
+            style={{
+              width: 28,
+              height: 28,
+              border: "1px solid rgba(57, 255, 20, 0.35)",
+              background: "rgba(8, 8, 8, 0.78)",
+              color: "#39ff14",
+              fontFamily: "var(--font-pixel)",
+              fontSize: "0.65rem",
+              lineHeight: 1,
+            }}
+          >
+            +
+          </button>
+          <button
+            type="button"
+            aria-label="Afastar modelo"
+            onClick={() => zoomBy(0.35)}
+            style={{
+              width: 28,
+              height: 28,
+              border: "1px solid rgba(57, 255, 20, 0.35)",
+              background: "rgba(8, 8, 8, 0.78)",
+              color: "#39ff14",
+              fontFamily: "var(--font-pixel)",
+              fontSize: "0.65rem",
+              lineHeight: 1,
+            }}
+          >
+            -
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 

@@ -58,6 +58,7 @@ function generateBeams(isMobile) {
 
 export default function LowPolyPage({ onClose }) {
   const [visible, setVisible] = useState(false);
+  const [activeViewer, setActiveViewer] = useState(null);
   const isMobile =
     typeof window !== "undefined" &&
     window.matchMedia("(max-width: 900px)").matches;
@@ -182,33 +183,68 @@ export default function LowPolyPage({ onClose }) {
 
         {/* Models grid */}
         <div className="lowpoly-page__grid">
-          {MODELS.map((model, i) => (
-            <div
-              key={model.name}
-              className="lowpoly-page__card lowpoly-page__fade-in"
-              style={{ animationDelay: `${0.3 + i * 0.1}s` }}
-            >
-              {/* Corner decorations */}
-              <div className="lowpoly-page__card-corner lowpoly-page__card-corner--tl" />
-              <div className="lowpoly-page__card-corner lowpoly-page__card-corner--tr" />
-              <div className="lowpoly-page__card-corner lowpoly-page__card-corner--bl" />
-              <div className="lowpoly-page__card-corner lowpoly-page__card-corner--br" />
+          {MODELS.map((model, i) => {
+            const isLocked = isMobile && activeViewer !== i;
 
-              {/* 3D Viewer */}
-              <div className="lowpoly-page__viewer">
-                <LowPolyViewer modelIndex={i} lowPower={isMobile} />
-                <span className="lowpoly-page__viewer-hint">
-                  ↻ arraste para girar
-                </span>
-              </div>
+            return (
+              <div
+                key={model.name}
+                className="lowpoly-page__card lowpoly-page__fade-in"
+                style={{ animationDelay: `${0.3 + i * 0.1}s` }}
+              >
+                {/* Corner decorations */}
+                <div className="lowpoly-page__card-corner lowpoly-page__card-corner--tl" />
+                <div className="lowpoly-page__card-corner lowpoly-page__card-corner--tr" />
+                <div className="lowpoly-page__card-corner lowpoly-page__card-corner--bl" />
+                <div className="lowpoly-page__card-corner lowpoly-page__card-corner--br" />
 
-              {/* Info */}
-              <div className="lowpoly-page__card-info">
-                <span className="lowpoly-page__card-name">{model.name}</span>
-                <span className="lowpoly-page__card-tag">Low Poly</span>
+                {/* 3D Viewer */}
+                <div className="lowpoly-page__viewer">
+                  <LowPolyViewer
+                    modelIndex={i}
+                    lowPower={isMobile}
+                    interactive={!isLocked}
+                  />
+                  {isLocked && (
+                    <button
+                      type="button"
+                      className="lowpoly-page__viewer-unlock"
+                      onClick={() => setActiveViewer(i)}
+                    >
+                      <span className="lowpoly-page__viewer-unlock-title">
+                        Clique para visualizar
+                      </span>
+                      <span className="lowpoly-page__viewer-unlock-subtitle">
+                        Gire e dê zoom sem travar o scroll da página
+                      </span>
+                    </button>
+                  )}
+                  {!isLocked && isMobile && (
+                    <button
+                      type="button"
+                      className="lowpoly-page__viewer-lock"
+                      onClick={() => setActiveViewer(null)}
+                    >
+                      Fechar visualização
+                    </button>
+                  )}
+                  <span className="lowpoly-page__viewer-hint">
+                    {isMobile
+                      ? isLocked
+                        ? "toque para abrir"
+                        : "↻ arraste e use +/-"
+                      : "↻ arraste e use +/-"}
+                  </span>
+                </div>
+
+                {/* Info */}
+                <div className="lowpoly-page__card-info">
+                  <span className="lowpoly-page__card-name">{model.name}</span>
+                  <span className="lowpoly-page__card-tag">Low Poly</span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         <section
