@@ -9,7 +9,7 @@
     "prebuild": "npm run optimize-images",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "npm run build && gh-pages -d dist"
+    "deploy": "npm run build"
   },
   "dependencies": {
     "motion": "^12.0.0",
