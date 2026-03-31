@@ -52,7 +52,7 @@ const MODELS = [
     source: `${ASSET_BASE}modelos/sonic/Sonic.fbx`,
     color: 0x2f7df6,
     wireColor: 0xffe600,
-    scale: 1.3,
+    scale: 10,
   },
 ];
 
