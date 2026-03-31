@@ -196,7 +196,7 @@ Scripts principais:
 - `npm run dev` para desenvolvimento
 - `npm run build` para produção
 - `npm run preview` para testar build
-- `npm run deploy` para publicar (gh-pages)
+- `npm run deploy` para gerar build de produção
 
 ## 8. Estado atual do conteúdo
 
