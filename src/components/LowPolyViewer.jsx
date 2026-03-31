@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
 
+const ASSET_BASE = import.meta.env.BASE_URL || "/";
+
 const MODELS = [
   {
     name: "Cristal",
@@ -47,7 +49,7 @@ const MODELS = [
   },
   {
     name: "Sonic",
-    source: "/modelos/sonic/Sonic.fbx",
+    source: `${ASSET_BASE}modelos/sonic/Sonic.fbx`,
     color: 0x2f7df6,
     wireColor: 0xffe600,
     scale: 2.3,
@@ -161,6 +163,7 @@ export default function LowPolyViewer({
       const fileName = source.slice(lastSlash + 1);
 
       loader.setPath(basePath);
+      loader.setResourcePath(basePath);
       loader.load(
         fileName,
         (fbx) => {
