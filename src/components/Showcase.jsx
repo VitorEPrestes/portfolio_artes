@@ -1,11 +1,11 @@
-import { useState } from 'react'
-import { motion } from 'motion/react'
-import { showcaseItems } from '../data/gallery'
-import Lightbox from './Lightbox'
-import './Showcase.css'
+import { useState } from "react";
+import { motion } from "motion/react";
+import { showcaseItems } from "../data/gallery";
+import Lightbox from "./Lightbox";
+import "./Showcase.css";
 
-export default function Showcase() {
-  const [lightboxImage, setLightboxImage] = useState(null)
+export default function Showcase({ onLowPolyActivate }) {
+  const [lightboxImage, setLightboxImage] = useState(null);
 
   return (
     <section className="showcase section texture-noise" id="showcase">
@@ -14,7 +14,7 @@ export default function Showcase() {
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
+            viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6 }}
           >
             Melhores trabalhos
@@ -28,7 +28,7 @@ export default function Showcase() {
               className="showcase__card"
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
+              viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
               whileHover={{ y: -8, transition: { duration: 0.2 } }}
               onClick={() => setLightboxImage(item)}
@@ -57,5 +57,5 @@ export default function Showcase() {
         onClose={() => setLightboxImage(null)}
       />
     </section>
-  )
+  );
 }
