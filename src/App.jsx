@@ -1,5 +1,4 @@
 import { lazy, Suspense } from "react";
-import { useState } from "react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import HoldToExplore from "./components/HoldToExplore";
@@ -10,18 +9,10 @@ const Pricing = lazy(() => import("./components/Pricing"));
 const Terms = lazy(() => import("./components/Terms"));
 const Discord = lazy(() => import("./components/Discord"));
 const Footer = lazy(() => import("./components/Footer"));
-const LowPolyPage = lazy(() => import("./components/LowPolyPage"));
 
 export default function App() {
-  const [showLowPoly, setShowLowPoly] = useState(false);
-
   return (
     <>
-      {showLowPoly && (
-        <Suspense fallback={null}>
-          <LowPolyPage onClose={() => setShowLowPoly(false)} />
-        </Suspense>
-      )}
       <a href="#showcase" className="skip-link">
         Pular para o conteúdo
       </a>
@@ -31,7 +22,7 @@ export default function App() {
         <Hero />
         <Suspense fallback={null}>
           <div className="section-sep" />
-          <Showcase onLowPolyActivate={() => setShowLowPoly(true)} />
+          <Showcase />
           <div className="section-sep section-sep--alt" />
           <Gallery />
           <div className="section-sep" />
@@ -41,7 +32,7 @@ export default function App() {
           <div className="section-sep" />
           <section className="section texture-noise" id="construction">
             <div className="container">
-              <HoldToExplore onActivate={() => setShowLowPoly(true)} />
+              <HoldToExplore />
             </div>
           </section>
           <div className="section-sep section-sep--alt" />

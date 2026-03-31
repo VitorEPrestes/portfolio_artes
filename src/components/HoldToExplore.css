@@ -210,6 +210,17 @@
   animation: hintPulse 1.6s ease-in-out infinite;
 }
 
+.hold-explore__construction-msg {
+  margin-top: 10px;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: #ffe600;
+  border: 1px solid rgba(255, 230, 0, 0.35);
+  background: rgba(255, 230, 0, 0.08);
+  padding: 8px 12px;
+  letter-spacing: 0.4px;
+}
+
 @keyframes hintPulse {
   0%,
   100% {
@@ -517,6 +528,11 @@
 
   .hold-explore__page-fx {
     display: none;
+  }
+
+  .hold-explore__construction-msg {
+    font-size: 0.76rem;
+    text-align: center;
   }
 
   .hold-explore__orbit,

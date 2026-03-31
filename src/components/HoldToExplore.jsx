@@ -5,7 +5,7 @@ const HOLD_DURATION = 2500; // ms to fully charge
 const PIXEL_SPAWN_INTERVAL = 60; // ms between pixel spawns
 const PIXEL_COLORS = ["#39ff14", "#00d4ff", "#b026ff", "#ffe600", "#ff006e"];
 const POP_FLASH_DURATION = 130;
-const POP_TRANSITION_DURATION = 380;
+const NOTICE_DURATION = 2600;
 
 export default function HoldToExplore({ onActivate }) {
   const [progress, setProgress] = useState(0);
@@ -13,6 +13,7 @@ export default function HoldToExplore({ onActivate }) {
   const [isHolding, setIsHolding] = useState(false);
   const [popState, setPopState] = useState(null); // null | 'flash' | 'black'
   const [popPixels, setPopPixels] = useState([]);
+  const [noticeVisible, setNoticeVisible] = useState(false);
   const [nucleus, setNucleus] = useState({ x: 0.5, y: 0.5 });
   const [fxOrigin, setFxOrigin] = useState({ x: 50, y: 50 });
 
@@ -128,14 +129,24 @@ export default function HoldToExplore({ onActivate }) {
       // Pop!
       setPopPixels(createPopPixels());
       setPopState("flash");
+      setNoticeVisible(true);
+
+      onActivate?.();
 
       setTimeout(() => {
-        setPopState("black");
+        setPopState(null);
       }, POP_FLASH_DURATION);
 
       setTimeout(() => {
-        onActivate?.();
-      }, POP_FLASH_DURATION + POP_TRANSITION_DURATION);
+        setNoticeVisible(false);
+      }, NOTICE_DURATION);
+
+      setTimeout(() => {
+        activatedRef.current = false;
+        setProgress(0);
+        setPixels([]);
+        setNucleus({ x: 0.5, y: 0.5 });
+      }, POP_FLASH_DURATION + 120);
 
       return;
     }
@@ -259,6 +270,12 @@ export default function HoldToExplore({ onActivate }) {
         <div className="hold-explore__tunnel-core" />
       </div>
 
+      {noticeVisible && (
+        <p className="hold-explore__construction-msg" role="status" aria-live="polite">
+          Esta pagina esta em construcao.
+        </p>
+      )}
+
       {/* Pop explosion */}
       {popState === "flash" && (
         <div className="hold-explore__pop">
@@ -281,7 +298,6 @@ export default function HoldToExplore({ onActivate }) {
         </div>
       )}
 
-      {popState === "black" && <div className="hold-explore__pop-black" />}
     </div>
   );
 }
